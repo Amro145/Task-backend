@@ -1,4 +1,5 @@
-@baseUrl = http://localhost:5000/api
+# @baseUrl = http://localhost:5000/api
+@baseUrl = https://task-backend-jade.vercel.app/api
 @authToken = {{signin.response.body.token}}
 
 ### 1. User Signup

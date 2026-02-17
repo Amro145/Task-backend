@@ -9,14 +9,10 @@ import { ConnectToDb } from "./DB/DB.js"
 const app = express()
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, async () => {
-    try {
-        await ConnectToDb()
-        console.log(`Server is running on port ${PORT}`)
-    } catch (err) {
-        console.log(err)
-    }
-})
+// Connect to Database immediately
+ConnectToDb().catch(err => {
+    console.error("Initial DB connection failed:", err);
+});
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -26,5 +22,15 @@ app.use(cors({
     credentials: true
 }))
 app.use(cookieParser())
+
 app.use("/api/users", userRoutes)
 app.use("/api", taskRoutes)
+
+// Listen only if running directly (not in a serverless environment like Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`)
+    })
+}
+
+export default app;
