@@ -1,0 +1,65 @@
+@baseUrl = http://localhost:5000/api
+@authToken = {{signin.response.body.token}}
+
+### 1. User Signup
+POST {{baseUrl}}/users/signup
+Content-Type: application/json
+
+{
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### 2. User Signin
+# @name signin
+POST {{baseUrl}}/users/signin
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### 3. Get All Tasks (Requires Auth)
+GET {{baseUrl}}/
+Authorization: Bearer {{authToken}}
+
+### 4. Create New Task (Requires Auth)
+# @name createTask
+POST {{baseUrl}}/
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "title": "My First Task",
+    "description": "This is a test task description",
+    "status": "pending"
+}
+
+### 5. Get Specific Task (Requires Auth)
+@taskId = {{createTask.response.body.task._id}}
+GET {{baseUrl}}/task/{{taskId}}
+Authorization: Bearer {{authToken}}
+
+### 6. Update Task (Requires Auth)
+PUT {{baseUrl}}/UpdateTask/{{taskId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "title": "Updated Task Title",
+    "description": "Updated description",
+    "status": "in-progress"
+}
+
+### 7. Complete Task (Requires Auth)
+PUT {{baseUrl}}/CompleteTask/{{taskId}}
+Authorization: Bearer {{authToken}}
+
+### 8. Delete Task (Requires Auth)
+DELETE {{baseUrl}}/DeleteTask/{{taskId}}
+Authorization: Bearer {{authToken}}
+
+### 9. User Logout
+GET {{baseUrl}}/users/logout

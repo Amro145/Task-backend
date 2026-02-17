@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Task from "../Models/TaskModels.js";
 export const CreateTask = async (req, res) => {
   try {
@@ -8,6 +9,7 @@ export const CreateTask = async (req, res) => {
     }
 
     const newTask = new Task({
+      user: req.user.id,
       title,
       description: description || "",
       status: status || "pending",
@@ -23,7 +25,7 @@ export const CreateTask = async (req, res) => {
 };
 export const GetTasks = async (req, res) => {
   try {
-    const Tasks = await Task.find();
+    const Tasks = await Task.find({ user: req.user.id });
     if (Tasks.length === 0) {
       return res.status(404).json({ message: "No tasks found" });
     }
@@ -36,10 +38,10 @@ export const GetTasks = async (req, res) => {
 export const GetTask = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ message: "Task ID is required" });
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Valid Task ID is required" });
     }
-    const task = await Task.findById(id);
+    const task = await Task.findOne({ _id: id, user: req.user.id });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -53,22 +55,25 @@ export const UpdateTask = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, status } = req.body;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Valid Task ID is required" });
+    }
+
     if (!title && !description && !status) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "At least one field (title, description, or status) is required to update" });
     }
-    if (!id) {
-      return res.status(400).json({ message: "Task ID is required" });
-    }
-    const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-    const updatedTask = await Task.findByIdAndUpdate(
-      id,
+
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: id, user: req.user.id },
       { title, description, status },
       { new: true }
     );
-    await updatedTask.save();
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
     return res
       .status(200)
       .json({ message: "Task updated successfully", task: updatedTask });
@@ -80,10 +85,10 @@ export const UpdateTask = async (req, res) => {
 export const DeleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ message: "Task ID is required" });
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Valid Task ID is required" });
     }
-    const task = await Task.findByIdAndDelete(id);
+    const task = await Task.findOneAndDelete({ _id: id, user: req.user.id });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -96,11 +101,11 @@ export const DeleteTask = async (req, res) => {
 export const CompleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ message: "Task ID is required" });
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Valid Task ID is required" });
     }
-    const task = await Task.findByIdAndUpdate(
-      id,
+    const task = await Task.findOneAndUpdate(
+      { _id: id, user: req.user.id },
       { status: "completed" },
       { new: true }
     );
