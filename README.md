@@ -1,54 +1,70 @@
-# CRUD Using Redux (Backend)
+# 🚀 Task Manager Backend API
 
-This is the backend service for the CRUD application, built with Node.js, Express, and MongoDB.
+A robust, production-ready Express.js REST API providing complete authentication and task management capabilities. Seamlessly built with MongoDB, secured with JWTs, and explicitly configured for serverless Vercel deployments.
 
-## Prerequisites
+## ✨ Features
+- **Secure Authentication:** JWT-based user authorization with secure, HTTP-only cookie parsing.
+- **RESTful Architecture:** Clean, stateless CRUD operations for Task management.
+- **Persistent Data:** Connected to MongoDB via Mongoose schemas.
+- **Serverless Ready:** Configured to deploy smoothly on Vercel without buffering timeouts or CORS preflight failures. 
+- **User Protection:** Middleware routes preventing unauthorized entry.
 
-- Node.js
-- MongoDB
+## 🛠️ Technology Stack
+- **Node.js** & **Express** - Core framework
+- **MongoDB** & **Mongoose** - Database & Object Data Modeling
+- **JSON Web Tokens (JWT)** - State security & authorization
+- **Bcrypt** - Password hashing
+- **Cookie-Parser** - Secure Cross-Origin cookie transmission
+- **Cors** - Multi-environment whitelisting 
 
-## Installation
+---
 
+## 🚦 Getting Started
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 1. Installation
+Clone the repository and install the backend dependencies.
+```bash
+cd Task-backend
+npm install
+```
 
-2. Create a `.env` file in the root directory and add your MongoDB connection string and port:
-   ```env
-   PORT=5000
-   DB_URL=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   ```
+### 2. Environment Variables
+Create a `.env` file in the root backend directory:
+```env
+PORT=5000
+DB_URL=mongodb+srv://<your-username>:<password>@cluster.mongodb.net/<dbname>
+JWT_SECRET=your_super_secret_jwt_key
+```
 
-## Running the Server
-
-To start the development server:
-
+### 3. Start Development Server
+Run the local database and API via nodemon:
 ```bash
 npm run dev
 ```
 
-The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
+---
 
-## API Endpoints
+## 🌎 API Endpoints
 
-Base URL: `/api`
+### User Authentication (`/api/users`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/signup`| Register a new user | ❌ No |
+| `POST` | `/signin`| Authenticate and receive cookie | ❌ No |
+| `GET`  | `/logout`| Destroy active session cookie | ❌ No |
+| `GET`  | `/me`    | Retrieve current profile session | ✅ Yes |
 
-| Method | Endpoint             | Description           |
-| :----- | :------------------- | :-------------------- |
-| GET    | `/`                  | Get all tasks         |
-| POST   | `/`                  | Create a new task     |
-| GET    | `/task/:id`          | Get a specific task   |
-| PUT    | `/UpdateTask/:id`    | Update a task         |
-| PUT    | `/CompleteTask/:id`  | Mark task as complete |
-| DELETE | `/DeleteTask/:id`    | Delete a task         |
+### Task Management (`/api`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET`  | `/`      | Fetch all tasks for logged-in user | ✅ Yes |
+| `POST` | `/`      | Create a new task | ✅ Yes |
+| `PUT`  | `/UpdateTask/:id` | Update task fields (i.e. status) | ✅ Yes |
+| `PUT`  | `/CompleteTask/:id`| Force task to 'completed' status | ✅ Yes |
+| `DELETE`| `/DeleteTask/:id` | Remove a task permanently | ✅ Yes |
 
-## Technologies
+---
 
-- **Express**: Web framework for Node.js
-- **Mongoose**: MongoDB object modeling
-- **Cors**: Cross-Origin Resource Sharing
-- **Dotenv**: Environment variable management
-- **Nodemon**: Development utility
+## 🚀 Deployment (Vercel)
+This project includes a `vercel.json` file designed to natively mount your Express REST framework directly onto Serverless Node edges. 
+Remember to whitelist your frontend URL strings in `server.js` `cors({ origin: [...] })`!
