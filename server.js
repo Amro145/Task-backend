@@ -8,12 +8,15 @@ import { ConnectToDb } from "./DB/DB.js"
 
 const app = express()
 const PORT = process.env.PORT || 5000;
-
-// Connect to Database immediately
-ConnectToDb().catch(err => {
-    console.error("Initial DB connection failed:", err);
+// Apply global middleware to guarantee connection on all requests (for Vercel serverless functions)
+app.use(async (req, res, next) => {
+    try {
+        await ConnectToDb();
+        next();
+    } catch (err) {
+        res.status(500).json({ message: "Internal server error: DB disconnected" });
+    }
 });
-
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({

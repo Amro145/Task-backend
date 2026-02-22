@@ -1,11 +1,8 @@
 import mongoose from "mongoose"
 
-// Track connection state globally for serverless environments (Vercel)
-let isConnected = false;
-
 export const ConnectToDb = async () => {
-    if (isConnected) {
-        console.log("Using existing MongoDB connection");
+    // 1 = connected, 2 = connecting
+    if (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2) {
         return;
     }
 
@@ -16,10 +13,9 @@ export const ConnectToDb = async () => {
         }
 
         await mongoose.connect(dbUrl, {
-            serverSelectionTimeoutMS: 5000, // Optional: Fail faster if no connection
+            serverSelectionTimeoutMS: 5000,
         });
 
-        isConnected = true;
         console.log("Connected to MongoDB")
     } catch (error) {
         console.error("Error connecting to MongoDB:", error)
