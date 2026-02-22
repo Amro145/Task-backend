@@ -17,8 +17,8 @@ ConnectToDb().catch(err => {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173","https://task-manger-sigma.vercel.app"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "https://task-manger-sigma.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true
 }))
 app.use(cookieParser())
